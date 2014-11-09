@@ -1,4 +1,6 @@
-DigitabulumHostBridge
+IMU Visualization
 =====================
 
-POC for node-based glove driver
+Render IMU movement in the browser with node.js and three.js.
+
+Unlock with gesture control.
