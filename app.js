@@ -4,7 +4,7 @@ var fs = require('fs')
 var io = require('socket.io').listen(app)
 var serialport = require("serialport");
 var SP = serialport.SerialPort;
-var serialPort = new SP("/dev/ttyACM0",
+var serialPort = new SP("/dev/ttyUSB0",
 	{
 		baudrate: 115200,
 		parser: serialport.parsers.readline("\n")
@@ -15,8 +15,10 @@ app.listen(5000);
 
 var dgram = require('dgram');
 
+
 var udp_socket = dgram.createSocket('udp4');
 
+/* SERIAL WORK */
 
 serialPort.open(function (error) {
   if ( error ) {
@@ -35,7 +37,6 @@ serialPort.open(function (error) {
 });
 
 
-
 // Http handler function
 function handler (req, res) {
     
@@ -50,6 +51,19 @@ function handler (req, res) {
                 if (error) {
                     res.writeHead(500);
                     return res.end("Error: unable to load index.html");
+                }
+                
+                res.writeHead(200,{'Content-Type': 'text/html'});
+                res.end(data);
+            });
+    // Managing the root for threejs
+    } else if (path == '/threejs') {
+        index = fs.readFile(__dirname+'/public/threejs/three.html', 
+            function(error,data) {
+                
+                if (error) {
+                    res.writeHead(500);
+                    return res.end("Error: unable to load threejs.html - " + error);
                 }
                 
                 res.writeHead(200,{'Content-Type': 'text/html'});
