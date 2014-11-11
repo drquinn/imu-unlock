@@ -1,6 +1,7 @@
 var app = require('http').createServer(handler)
 var url= require('url')
 var fs = require('fs')
+var os = require('os')
 var io = require('socket.io').listen(app)
 var serialport = require("serialport");
 var SP = serialport.SerialPort;
@@ -14,6 +15,18 @@ var serialPort = new SP("/dev/ttyUSB0",
 app.listen(5000);
 
 var dgram = require('dgram');
+
+// Get localhost IP
+var interfaces = os.networkInterfaces();
+var addresses = [];
+for (var k in interfaces) {
+        for (var k2 in interfaces[k]) {
+                var address = interfaces[k][k2];
+                if (address.family === 'IPv4' && !address.internal) {
+                        addresses.push(address.address);
+                }
+        }
+}
 
 
 var udp_socket = dgram.createSocket('udp4');

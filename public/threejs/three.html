@@ -30,7 +30,7 @@
                 var unlocked2 = false;
                 var whiskey = 0;
 
-                var socket = io.connect('192.168.1.124:5000');
+                var socket = io.connect('localhost:5000');
                 var orderOfMag = (3.14159260/180);
 
                 function filterNoise(dataRoll, dataRollArray) {
@@ -84,10 +84,6 @@
                         }
 
                         $("#subHeading").append("<div>" + whiskey + " unlocks: 1 - " + unlocked1 + " 2 - " + unlocked2 + "</div>");
-
-
-
-
                     }
                 });
                 var container, stats;
