@@ -11,8 +11,8 @@ var serialPort = new SP("/dev/ttyUSB0",
 		parser: serialport.parsers.readline("\n")
 	}, false);
 
-
-app.listen(5000);
+var port = 5000;
+app.listen(port);
 
 var dgram = require('dgram');
 
@@ -27,7 +27,7 @@ for (var k in interfaces) {
                 }
         }
 }
-
+io.sockets.emit('send_ip', addresses[0]);
 
 var udp_socket = dgram.createSocket('udp4');
 
