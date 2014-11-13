@@ -27,7 +27,8 @@ for (var k in interfaces) {
                 }
         }
 }
-io.sockets.emit('send_ip', addresses[0]);
+var localIP = addresses[0];
+console.log(localIP);
 
 var udp_socket = dgram.createSocket('udp4');
 
@@ -69,6 +70,11 @@ function handler (req, res) {
                 res.writeHead(200,{'Content-Type': 'text/html'});
                 res.end(data);
             });
+
+    // Send localIP to server
+    } else if (path == '/getIP') {
+            res.end(localIP);
+    
     // Managing the root for threejs
     } else if (path == '/threejs') {
         index = fs.readFile(__dirname+'/public/threejs/three.html', 

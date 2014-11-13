@@ -31,8 +31,15 @@
                 var whiskey = 0;
                 var serverIP;
 
-                // todo: get serverIP and replace localhost
-                var socket = io.connect('localhost:5000');
+                var socket;
+
+                $.get('/getIP', function(res) {
+                    serverIP = res;
+                    socket = io.connect(serverIP + ':5000');
+                    console.log('socket connected to: ' + serverIP);
+                    runSocket();
+                });
+
                 var orderOfMag = (3.14159260/180);
 
                 function filterNoise(dataRoll, dataRollArray) {
@@ -46,48 +53,50 @@
                         }
                 }
 
-                socket.on('serial_update', function(data) {
-                    if (data.charAt(0) === 'O') {
-                        console.log(data);
-                        var dataArray = data.split(/ /);
+                function runSocket() {
+                        socket.on('serial_update', function(data) {
+                            if (data.charAt(0) === 'O') {
+                                console.log(data);
+                                var dataArray = data.split(/ /);
 
-                        // set x
-                        dataRollx = (dataArray[1] *= orderOfMag).toFixed(accuracy);
-                        filterNoise(dataRollx, dataRollxArray);
-                        
-                        // set y
-                        dataRolly = (dataArray[2] *= orderOfMag).toFixed(accuracy);
-                        filterNoise(dataRolly, dataRollyArray);
+                                // set x
+                                dataRollx = (dataArray[1] *= orderOfMag).toFixed(accuracy);
+                                filterNoise(dataRollx, dataRollxArray);
+                                
+                                // set y
+                                dataRolly = (dataArray[2] *= orderOfMag).toFixed(accuracy);
+                                filterNoise(dataRolly, dataRollyArray);
 
-                        // set z
-                        dataRollz = (dataArray[3] *= orderOfMag).toFixed(accuracy);
-                        filterNoise(dataRollz, dataRollzArray);
+                                // set z
+                                dataRollz = (dataArray[3] *= orderOfMag).toFixed(accuracy);
+                                filterNoise(dataRollz, dataRollzArray);
 
-                        console.log(dataRollx + "," + dataRolly + "," + dataRollz);
-                        $("#subHeading").replaceWith("<div id='subHeading'>" + data + "</div>");
+                                console.log(dataRollx + "," + dataRolly + "," + dataRollz);
+                                $("#subHeading").replaceWith("<div id='subHeading'>" + data + "</div>");
 
 
-                        var desiredAngle = -90 / 180 * 3.14;
-                        var rotationCheck = dataRollx - desiredAngle;
-                        var desiredAngle2 = 90 / 180 * 3.14;
-                        var rotationCheck2 = dataRollx - desiredAngle2;
+                                var desiredAngle = -90 / 180 * 3.14;
+                                var rotationCheck = dataRollx - desiredAngle;
+                                var desiredAngle2 = 90 / 180 * 3.14;
+                                var rotationCheck2 = dataRollx - desiredAngle2;
 
-                        console.log(rotationCheck);
-                        if (Math.abs(rotationCheck) < 0.2 || unlocked1 === true) {
-                                console.log("UNLOCKED - 1");
-                                unlocked1 = true;
-                                console.log(rotationCheck2);
-                                if (Math.abs(rotationCheck2) < 0.2) {
-                                        console.log("UNLOCKED - 2");
-                                        unlocked2 = true;
-                                        whiskey++;
-                                        unlocked1 = unlocked2 = false;
+                                console.log(rotationCheck);
+                                if (Math.abs(rotationCheck) < 0.2 || unlocked1 === true) {
+                                        console.log("UNLOCKED - 1");
+                                        unlocked1 = true;
+                                        console.log(rotationCheck2);
+                                        if (Math.abs(rotationCheck2) < 0.2) {
+                                                console.log("UNLOCKED - 2");
+                                                unlocked2 = true;
+                                                whiskey++;
+                                                unlocked1 = unlocked2 = false;
+                                        }
                                 }
-                        }
 
-                        $("#subHeading").append("<div>" + whiskey + " unlocks: 1 - " + unlocked1 + " 2 - " + unlocked2 + "</div>");
-                    }
-                });
+                                $("#subHeading").append("<div>" + whiskey + " unlocks: 1 - " + unlocked1 + " 2 - " + unlocked2 + "</div>");
+                            }
+                        });
+                }
                 var container, stats;
                 var camera, scene, renderer;
                 var cube, plane;

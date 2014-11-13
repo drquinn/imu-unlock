@@ -14,7 +14,9 @@ socket.on('serial_update', function(data) {
   $("#log_data").append("<div>" + data + "</div>");
 });
 
-
+$.get('/getIP', function(res) {
+    console.log(res);
+});
 
 
 $(document).ready(function() {
