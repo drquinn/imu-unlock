@@ -26,6 +26,8 @@ $.get('/getIP', function(res) {
     socket = io.connect(serverIP + ':5000');
     console.log('socket connected to: ' + serverIP);
     runSocket();
+
+    unlock.add();
 });
 
 var orderOfMag = (3.14159260/180);
@@ -80,6 +82,7 @@ function runSocket() {
                                 unlocked1 = unlocked2 = false;
                         }
                 }
+
 
                 $("#subHeading").append("<div>" + whiskey + " unlocks: 1 - " + unlocked1 + " 2 - " + unlocked2 + "</div>");
             }
