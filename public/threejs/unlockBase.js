@@ -1,6 +1,8 @@
+
+
 var unlock = function() {
     // private members
-    var function = checkUnlock() {
+    var checkUnlock = function() {
         var desiredAngle = -90 / 180 * 3.14;
         var rotationCheck = dataRollx - desiredAngle;
         var desiredAngle2 = 90 / 180 * 3.14;
@@ -18,7 +20,10 @@ var unlock = function() {
                         unlocked1 = unlocked2 = false;
                 }
         }
+        $("#subHeading").append("<div>" + whiskey + " unlocks: 1 - " + unlocked1 + " 2 - " + unlocked2 + "</div>");
     } 
+    
+
 
     return {
         // public members

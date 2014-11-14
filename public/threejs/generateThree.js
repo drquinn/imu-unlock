@@ -26,8 +26,6 @@ $.get('/getIP', function(res) {
     socket = io.connect(serverIP + ':5000');
     console.log('socket connected to: ' + serverIP);
     runSocket();
-
-    unlock.add();
 });
 
 var orderOfMag = (3.14159260/180);
@@ -64,7 +62,10 @@ function runSocket() {
                 console.log(dataRollx + "," + dataRolly + "," + dataRollz);
                 $("#subHeading").replaceWith("<div id='subHeading'>" + data + "</div>");
 
-
+                unlock.checkUnlock();
+                
+                
+                /* REMOVE MOVED TO UNLOCKBASE CLASS
                 var desiredAngle = -90 / 180 * 3.14;
                 var rotationCheck = dataRollx - desiredAngle;
                 var desiredAngle2 = 90 / 180 * 3.14;
@@ -82,9 +83,11 @@ function runSocket() {
                                 unlocked1 = unlocked2 = false;
                         }
                 }
+                
 
 
                 $("#subHeading").append("<div>" + whiskey + " unlocks: 1 - " + unlocked1 + " 2 - " + unlocked2 + "</div>");
+                */
             }
         });
 }
