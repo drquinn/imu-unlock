@@ -1,4 +1,4 @@
-
+'use strict';
 
 var unlock = function() {
     // private members
