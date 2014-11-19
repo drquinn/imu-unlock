@@ -1,6 +1,6 @@
-IMU Visualization
+IMU Unlock
 =====================
 
-Render IMU movement in the browser with node.js and three.js.
+Render IMU (Inertial Measurement Unit) movement in the browser with node.js and three.js.
 
 Unlock with gesture control.
