@@ -5,13 +5,24 @@ Generate 3D render using serial data from IMU
 */
 
 'use strict';
-
 var dataRollx = 0;
 var dataRolly = 0;
 var dataRollz = 0;
-var dataRollxArray = [];
-var dataRollyArray = [];
-var dataRollzArray = [];
+
+// filter vars
+var dataRollxArrayA = [];
+var dataRollyArrayA = [];
+var dataRollzArrayA = [];
+var dataRollxArrayB = [];
+var dataRollyArrayB = [];
+var dataRollzArrayB = [];
+var gain = 32;
+var c1 = 2.0;
+var c2 = -0.57;
+var c3 = 2.57;
+var c4 = -4.44;
+var c5 = 3.43;
+
 var rotationMax = 0.5;
 var accuracy = 2;
 var unlocked1 = false;
@@ -30,15 +41,33 @@ $.get('/getIP', function(res) {
 
 var orderOfMag = (3.14159260/180);
 
-function filterNoise(dataRoll, dataRollArray) {
-        dataRollArray.push(dataRoll);
-        if (Math.abs(dataRollArray[1]) - Math.abs(dataRollArray[0]) > rotationMax){
-            dataRoll = dataRollArray[0];
-            console.log("NOISE - " + dataRollArray[1] + " - " + dataRollArray[0]);
-        }
-        if (dataRollArray.length > 1) {
-            dataRollArray.shift();
-        }
+function filterNoise(dataRoll, dataRollArrayA, dataRollArrayB) {
+    dataRollArrayA[0] = dataRollArrayA[1];
+    dataRollArrayA[1] = dataRollArrayA[2];
+    dataRollArrayA[2] = dataRollArrayA[3];
+    dataRollArrayA[3] = dataRollArrayA[4];
+    dataRollArrayA[4] = (dataRoll / gain); 
+
+    dataRollArrayB[0] = dataRollArrayB[1];
+    dataRollArrayB[1] = dataRollArrayB[2];
+    dataRollArrayB[2] = dataRollArrayB[3];
+    dataRollArrayB[3] = dataRollArrayB[4];
+    dataRollArrayB[4] = ((dataRollArrayA[0] + dataRollArrayA[4]) - 
+       (c1 * dataRollArrayA[2]) + (c2 * dataRollArrayB[0]) +
+       (c3 * dataRollArrayB[1]) + (c4 * dataRollArrayB[2]) +
+       (c5 * dataRollArrayB[3]));
+
+    return dataRollArrayB[4];
+
+
+        //dataRollArray.push(dataRoll);
+        //if (Math.abs(dataRollArray[1]) - Math.abs(dataRollArray[0]) > rotationMax){
+        //    dataRoll = dataRollArray[0];
+        //    console.log("NOISE - " + dataRollArray[1] + " - " + dataRollArray[0]);
+        //}
+        //if (dataRollArray.length > 1) {
+        //    dataRollArray.shift();
+        //}
 }
 
 function runSocket() {
@@ -49,15 +78,16 @@ function runSocket() {
 
                 // set x
                 dataRollx = (dataArray[1] *= orderOfMag).toFixed(accuracy);
-                filterNoise(dataRollx, dataRollxArray);
+                dataRollx = filterNoise(dataRollx, dataRollxArrayA, dataRollxArrayB);
                 
                 // set y
                 dataRolly = (dataArray[2] *= orderOfMag).toFixed(accuracy);
-                filterNoise(dataRolly, dataRollyArray);
+                dataRolly = filterNoise(dataRolly, dataRollyArrayA, dataRollxArrayB);
 
                 // set z
                 dataRollz = (dataArray[3] *= orderOfMag).toFixed(accuracy);
-                filterNoise(dataRollz, dataRollzArray);
+                dataRollz = filterNoise(dataRollz, dataRollzArrayA, dataRollxArrayB);
+
 
                 console.log(dataRollx + "," + dataRolly + "," + dataRollz);
                 $("#subHeading").replaceWith("<div id='subHeading'>" + data + "</div>");
