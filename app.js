@@ -1,20 +1,17 @@
-var app = require('http').createServer(handler)
-var url= require('url')
-var fs = require('fs')
-var os = require('os')
-var io = require('socket.io').listen(app)
+var app = require('http').createServer(handler);
+var url= require('url');
+var fs = require('fs');
+var os = require('os');
+var io = require('socket.io').listen(app);
 var serialport = require("serialport");
 var SP = serialport.SerialPort;
-var serialPort = new SP("/dev/ttyUSB0",
+var serialPort = new SP("COM4",
 	{
 		baudrate: 115200,
 		parser: serialport.parsers.readline("\n")
 	}, false);
 
-var port = 5000;
-app.listen(port);
-
-var dgram = require('dgram');
+app.listen(5000);
 
 // Get localhost IP
 var interfaces = os.networkInterfaces();
@@ -29,8 +26,6 @@ for (var k in interfaces) {
 }
 var localIP = addresses[0];
 console.log(localIP);
-
-var udp_socket = dgram.createSocket('udp4');
 
 /* SERIAL WORK */
 
@@ -59,38 +54,25 @@ function handler (req, res) {
     
     // Managing the root route
     if (path == '/') {
-        index = fs.readFile(__dirname+'/public/index.html', 
+        index = fs.readFile(__dirname+'/three.html', 
             function(error,data) {
                 
                 if (error) {
                     res.writeHead(500);
-                    return res.end("Error: unable to load index.html");
+                    return res.end("Error: unable to load three.html");
                 }
                 
                 res.writeHead(200,{'Content-Type': 'text/html'});
                 res.end(data);
             });
-
+    
     // Send localIP to server
     } else if (path == '/getIP') {
             res.end(localIP);
-    
-    // Managing the root for threejs
-    } else if (path == '/threejs') {
-        index = fs.readFile(__dirname+'/public/threejs/three.html', 
-            function(error,data) {
-                
-                if (error) {
-                    res.writeHead(500);
-                    return res.end("Error: unable to load threejs.html - " + error);
-                }
-                
-                res.writeHead(200,{'Content-Type': 'text/html'});
-                res.end(data);
-            });
+
     // Managing the route for the javascript files
     } else if( /\.(js)$/.test(path) ) {
-        index = fs.readFile(__dirname+'/public'+path, 
+        index = fs.readFile(__dirname+path, 
             function(error,data) {
                 
                 if (error) {
@@ -107,34 +89,3 @@ function handler (req, res) {
     }
     
 }
-
-
-
-// Web Socket Connection
-io.sockets.on('connection', function (socket) {
-    
-  // If we recieved a command from a client to start watering lets do so
-  socket.on('ping', function(data) {
-      console.log("ping");
-      
-      delay = data["duration"];
-      
-      // Set a timer for when we should stop watering
-      setTimeout(function(){
-          socket.emit("pong");
-      }, delay*1);
-      
-  });
-
-});
-
-
-
-udp_socket.on('message', function(content, rinfo) {
-	console.log('UDP byte ', content, ' from ', rinfo.address, rinfo.port, ' JSON or rinfo ', JSON.stringify(rinfo));
-	io.sockets.emit('udp_update', content.toString("utf8", 0, rinfo.size));
-});
-
-
-udp_socket.bind(1900);
-
