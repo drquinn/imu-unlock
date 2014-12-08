@@ -107,9 +107,9 @@ function runSocket() {
 
 
                 console.log(dataRollx + "," + dataRolly + "," + dataRollz);
-                $("#subHeading").replaceWith("<div id='subHeading'>" + data + "</div>" +
-                        "<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>");
+                $("#subHeading").replaceWith("<div id='subHeading'>" + data + "</div>");
 
+                        
                 unlock.checkUnlock();
 
             }
@@ -131,8 +131,9 @@ function init() {
     container.appendChild( info );
 
     $("#pourHeading").append(
-        "<div id='subHeading'></div>" +
-        "<div><span id='pumpOn'>pump on &nbsp;&nbsp;&nbsp;&nbsp;</span><span id='pumpOff'>pump off</span></div>" 
+        "<div><span id='pumpOn'>Pump on &nbsp;&nbsp;&nbsp;&nbsp;</span><span id='pumpOff'>Pump off</span></div>" +
+        "<br />" +
+        "<div id='subHeading'></div>"
     );
     $("#pumpOn").click(function() {
         $.get('/pumpOn', function(res) {

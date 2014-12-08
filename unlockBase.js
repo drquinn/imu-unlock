@@ -15,15 +15,31 @@ var unlock = function() {
                 console.log(rotationCheck2);
                 if (Math.abs(rotationCheck2) < 0.2) {
                         console.log("UNLOCKED - 2");
-                        $.get('/pumpPour', function(res) {
-                        });
                         unlocked2 = true;
-                        whiskey++;
-                        unlocked1 = unlocked2 = false;
+                        setTimeout(resetUnlock, 2000);
                 }
         }
-        $("#subHeading").append("<div>" + whiskey + " unlocks: 1 - " + unlocked1 + " 2 - " + unlocked2 + "</div>");
+        $("#subHeading").append(
+            "<div>Drinks Poured: " + whiskey + "<br /><br />" +
+            "<span id='unlock1' class='glyphicon glyphicon-ok' aria-hidden='true'></span>" +
+            "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;" +
+            "<span id='unlock2' class='glyphicon glyphicon-ok' aria-hidden='true'></span>" +
+            "</div>");
+        if(unlocked1) {
+            $("#unlock1").css("color", "green");
+        }
+        if(unlocked2) {
+            $("#unlock2").css("color", "green");
+        }
+
     } 
+    var resetUnlock = function() {
+        $.get('/pumpPour', function(res) {
+        });
+        whiskey++;
+        unlocked1 = unlocked2 = false;
+    }
+
     
 
 

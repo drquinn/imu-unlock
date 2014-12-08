@@ -75,7 +75,7 @@ function handler (req, res) {
 
     // Pour with pump
     } else if (path == '/pumpPour') {
-            pumpMilliseconds(2000); 
+            pumpMilliseconds(45000); 
             console.log('pump pouring');
             res.end('pump pouring called');
 
