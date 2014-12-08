@@ -1,8 +1,11 @@
 var app = require('http').createServer(handler);
+app.listen(5000);
+
 var url= require('url');
 var fs = require('fs');
 var os = require('os');
 var io = require('socket.io').listen(app);
+
 var serialport = require("serialport");
 var SP = serialport.SerialPort;
 var serialPort = new SP("COM4",
@@ -11,7 +14,7 @@ var serialPort = new SP("COM4",
 		parser: serialport.parsers.readline("\n")
 	}, false);
 
-app.listen(5000);
+
 
 // Get localhost IP
 var interfaces = os.networkInterfaces();
@@ -27,8 +30,9 @@ for (var k in interfaces) {
 var localIP = addresses[0];
 console.log(localIP);
 
-/* SERIAL WORK */
+var value = 0x00;
 
+// Serial Connection 
 serialPort.open(function (error) {
   if ( error ) {
     console.log('failed to open: '+error);
@@ -37,13 +41,12 @@ serialPort.open(function (error) {
     serialPort.on('data', function(data) {
       console.log('data received: ' + data);
       io.sockets.emit('serial_update', data);
+    // Write to serial port
+    //serialPort.write( new Buffer([0x01]));
     });
-    //serialPort.write("ls\n", function(err, results) {
-    //  console.log('err ' + err);
-    //  console.log('results ' + results);
-    //});
   }
 });
+
 
 
 // Http handler function
@@ -70,6 +73,24 @@ function handler (req, res) {
     } else if (path == '/getIP') {
             res.end(localIP);
 
+    // Pour with pump
+    } else if (path == '/pumpPour') {
+            pumpMilliseconds(2000); 
+            console.log('pump pouring');
+            res.end('pump pouring called');
+
+    // Start pump
+    } else if (path == '/pumpOn') {
+            startPump(); 
+            console.log('pump on');
+            res.end('pump turned on');
+
+    // Stop pump
+    } else if (path == '/pumpOff') {
+            stopPump(); 
+            console.log('pump off');
+            res.end('pump turned off');
+
     // Managing the route for the javascript files
     } else if( /\.(js)$/.test(path) ) {
         index = fs.readFile(__dirname+path, 
@@ -88,4 +109,27 @@ function handler (req, res) {
         res.end("Error: 404 - File not found.");
     }
     
+}
+
+// Pump logic
+function pumpMilliseconds(ms) {
+  startPump();
+  setTimeout(function () {
+    stopPump();
+  }, ms);
+}
+
+var startPump = function () {
+    setPump(0x01);
+    console.log('pump running...');
+}
+
+var stopPump = function () {
+    setPump(0x00);
+    console.log('pump stopped.');
+}
+
+var setPump = function(value) {
+    // write serial
+    serialPort.write( new Buffer([value]));
 }

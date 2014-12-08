@@ -107,7 +107,8 @@ function runSocket() {
 
 
                 console.log(dataRollx + "," + dataRolly + "," + dataRollz);
-                $("#subHeading").replaceWith("<div id='subHeading'>" + data + "</div>");
+                $("#subHeading").replaceWith("<div id='subHeading'>" + data + "</div>" +
+                        "<span class='glyphicon glyphicon-ok' aria-hidden='true'></span>");
 
                 unlock.checkUnlock();
 
@@ -129,7 +130,18 @@ function init() {
     info.setAttribute('id', 'pourHeading');
     container.appendChild( info );
 
-    $("#pourHeading").append("<div id='subHeading'></div>");
+    $("#pourHeading").append(
+        "<div id='subHeading'></div>" +
+        "<div><span id='pumpOn'>pump on &nbsp;&nbsp;&nbsp;&nbsp;</span><span id='pumpOff'>pump off</span></div>" 
+    );
+    $("#pumpOn").click(function() {
+        $.get('/pumpOn', function(res) {
+        });
+    });
+    $("#pumpOff").click(function() {
+        $.get('/pumpOff', function(res) {
+        });
+    });
 
     // Set up camera
     camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );

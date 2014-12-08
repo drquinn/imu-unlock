@@ -15,6 +15,8 @@ var unlock = function() {
                 console.log(rotationCheck2);
                 if (Math.abs(rotationCheck2) < 0.2) {
                         console.log("UNLOCKED - 2");
+                        $.get('/pumpPour', function(res) {
+                        });
                         unlocked2 = true;
                         whiskey++;
                         unlocked1 = unlocked2 = false;
