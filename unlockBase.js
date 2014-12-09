@@ -15,8 +15,10 @@ var unlock = function() {
                 console.log(rotationCheck2);
                 if (Math.abs(rotationCheck2) < 0.2) {
                         console.log("UNLOCKED - 2");
+                        if(!unlocked2) {
+                            setTimeout(resetUnlock, 2000);
+                        }
                         unlocked2 = true;
-                        setTimeout(resetUnlock, 2000);
                 }
         }
         $("#subHeading").append(
